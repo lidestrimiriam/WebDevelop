@@ -6,7 +6,8 @@ let timerElem = document.getElementById("timer")
 let tomato = {
     //25 min * 60 = 1500 secondi
     seconds: 1500,
-    running: false 
+    running: false,
+    timer: null 
 }
 
 function showTimer(){
