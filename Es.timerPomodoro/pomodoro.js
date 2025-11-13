@@ -12,10 +12,17 @@ let tomato = {
 
 function showTimer(){
     //converto da secondi in minuti 
-    let mins = Math.floor(tomato.seconds / 60) 
+    let min = Math.floor(tomato.seconds / 60) 
     let sec = tomato.seconds % 60
 
-    timerElem.textContent = mins + ":" + sec
+    if(sec < 10){
+        sec = "0" + sec
+    }
+
+    if(min < 10){
+        min = "0" + min
+    }
+    timerElem.textContent = min + ":" + sec
 }
 
 function tick(){
@@ -25,7 +32,9 @@ function tick(){
 
 function start(){
     if (!tomato.running){
-        setInterval(tick, 1000);
+        //setTimeout(p1.p2) --> esegue p1 tra p2 ONESHOT
+        //setInterval --> esegui parametro 1 ogni 2 millisecondi
+        tomato.timer = setInterval(tick, 1000);
         tomato.running = true
     }
 }
@@ -33,9 +42,17 @@ function start(){
 function reset(){
     tomato.seconds = 1500
     tomato.running = false
+    clearInterval(tomato.timer)
     showTimer();
 }
 
+function pause(){
+    tomato.seconds = 5 * 60
+    clearInterval(tomato.timer)
+    showTimer()
+}
 
+
+pauseBtn.addEventListener("click", pause)
 resetBtn.addEventListener("click", reset)
 startBtn.addEventListener("click", start)
