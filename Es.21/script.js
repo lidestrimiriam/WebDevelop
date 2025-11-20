@@ -13,16 +13,19 @@ function genBtn(){
 
     let newBtn = document.createElement("button");
 
-    newBtn.textContent = index++;
+
+    newBtn.textContent = Math.floor(Math.random() * 10) + 1; //math.randome -> numeri casuali con la virgola / math.floor -> toglie la virgola (arrotonda per difetto)
     newBtn.addEventListener("click", () =>{
         //AGGIUNGI A SOMMA E RIMUOVI
         totalSum += Number(newBtn.textContent);
         newBtn.remove();
+        console.log(totalSum);
     });
-
+    index++;
     brnContainer.append(newBtn);
-}
 
+
+}
 
 
 generator = setInterval(genBtn,1000)
