@@ -7,7 +7,7 @@ let risultato = "";
 
 for(let nome of lista){
   if(nome.length > risultato.length){
-    risultato - nome;
+    risultato = nome;
   }
 }
 
