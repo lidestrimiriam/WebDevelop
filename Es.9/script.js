@@ -11,7 +11,7 @@ for(let nome of lista){
   }
 }
 
-testo.textContent = "il nome più lungo è "+ risultato
+testo.textContent = "il nome più lungo è: "+ risultato
 }
 
 bottone.addEventListener("click", lunghezzaNome);
