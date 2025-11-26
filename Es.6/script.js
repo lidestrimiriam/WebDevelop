@@ -5,7 +5,7 @@ let numero = document.getElementById("numero");
 
 
 function elementi(){
-    console.log(array[Number(numero.value)])
+    testo.textContent = (array[Number(numero.value)])
 }
 
 bottone.addEventListener("click", elementi);
