@@ -45,5 +45,3 @@ function calcola() {
 
 bottone.addEventListener("click", aggiungiPersona);
 bottoneCalcola.addEventListener("click", calcola);
-
-bottone.addEventListener("click", calcola);
