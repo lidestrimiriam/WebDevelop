@@ -12,7 +12,10 @@ function incrementa (){
 
   if(valore >= limite.value){
     testo.textContent = "Limite raggiunto!"
+    bottonePiu.disabled = true;
   }
+
+
 }
 
 function decrementa(){
@@ -20,6 +23,7 @@ function decrementa(){
   risultato.textContent = valore;
   if(valore <= 0){
     testo.textContent = "Limite raggiunto!"
+    bottoneMeno.disabled = true;
   }
 }
 
