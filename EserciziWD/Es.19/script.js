@@ -4,9 +4,16 @@ let risultato = document.getElementById("risultato");
 
 let contatore = 0;
 bottone.disabled = true;
-function conta(){
 
-}
+//function conta(){ if(bottone.disabled){bottone.disabled = false;}}
 
+  testo.addEventListener("keyup", () =>{  //testo = input
+    contatore++;
+    if(contatore >= 20){
+      bottone.disabled = false;
+    }
+  })
 
-bottone.addEventListener("click", conta);
+bottone.addEventListener("click", () => {
+  risultato.textContent = "Successo";
+});
