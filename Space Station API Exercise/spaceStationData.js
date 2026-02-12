@@ -32,10 +32,35 @@ async function getSolarPanels(){
     }
 }
 
-async function printResults (){
-    let results = await getSolarPanels();
 
-    console.log(results);
+async function getModules() {
+    let response = await fetch(BASE_URL + "/station/modules");
+    
+    if(response.ok){
+        let json = await response.json();
+        let modules = json.modules;
+
+        let listModules = [];
+        for(const module of modules){
+            let subsystems = module.systems.subsystems;
+            for(const subsystem of subsystems){
+                if(subsystem.status !== "nominal"){
+                    listModules.push(module);
+                }
+            }
+        }
+
+        console.log(subsystem);
+
+        return{
+            moduledID: subsystem,
+            listSubSystem: listSubSystem
+        }
+
+    }else{
+        console.log("Errore HTTP: " + response.status);
+    }
 }
 
-printResults();
+getSolarPanels();
+getModules();
