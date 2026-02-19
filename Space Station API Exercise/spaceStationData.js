@@ -41,22 +41,22 @@ async function getModules() {
         let modules = json.modules;
 
         let listModules = [];
-        for(const module of modules){
-            let subsystems = module.systems.subsystems;
-            for(const subsystem of subsystems){
-                if(subsystem.status !== "nominal"){
-                    listModules.push(module);
+        let degradedSystems = [];
+        for(let module of modules){
+            if(module.systems.subsystems){
+                for(let subsystem of module.systems.subsystems){
+                    if(subsystem.status != "nominal"){
+                        degradedSystems.push(subsystem);
+                    }
                 }
+                listModules.push({
+                    moduleId: module.id,
+                    degradedSystemsNames: degradedSystems
+                });
             }
         }
-
-        console.log(subsystem);
-
-        return{
-            moduledID: subsystem,
-            listSubSystem: listSubSystem
-        }
-
+        return listModules;
+        
     }else{
         console.log("Errore HTTP: " + response.status);
     }
