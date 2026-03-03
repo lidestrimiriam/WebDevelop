@@ -73,7 +73,7 @@ async function comandiPendenti(){
     let risultati = [];
     for(let command of commands){
         if(command.status === "pending"){
-            let responsePUT = await fetch("http://localhost:3000/commands/" + command.id + "/execute", {method: 'PUT'});
+            let responsePUT = await fetch('http://localhost:3000/commands/' + command.id + '/execute', {method: 'PUT'});
             let jsonPUT = await responsePUT.json();
         if(jsonPUT.success){
             comandiEseguiti++;
@@ -101,6 +101,41 @@ async function comandiPendenti(){
 
 }
 
+async function emergencyStop(){
+    let response = await fetch('http://localhost:3000/experiments');
+    let json = await response.json();
+
+    let experiments = json.experiments;
+    let esperimentoConPowerMaggiore = null; /* null pk è un oggetto*/
+    let powerMax = 0;
+    for(let experiment of experiments){
+        if(experiment.status === "active" && experiment.power > powerMax){
+            powerMax = experiment.power;
+            esperimentoConPowerMaggiore = experiment;
+        }
+    }
+
+    let responsePOST = await fetch('http://localhost:3000/commands',
+            {method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                action: "emergency_stop",
+                experimentId: esperimentoConPowerMaggiore.id,
+                reason: "emergency Power Reduction"
+            })
+        });
+
+        let jsonPOST = await responsePOST.json();
+
+        return{
+            experimentId: esperimentoConPowerMaggiore.id,
+            powerSaved: powerMax
+        }
+
+
+
+
+}
 
 
 
