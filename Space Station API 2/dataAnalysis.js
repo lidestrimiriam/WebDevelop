@@ -1,21 +1,19 @@
 async function shutdownAllLowExperiments(){
-    const response = await fetch("http://localhost:3000/experiments");
+    const response = await fetch('http://localhost:3000/experiments');
     const allExperimentsData = await response.json();
 
     let commandsFromServer = [];
 /* TASK 2 */
     for (const experiment of allExperimentsData.experiments){
         if(experiment.status === "active" && experiment.priority === "low"){
-            const postResponse = await fetch("http://localhost:3000/commands", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                    },
-                body: JSON.stringify({
+            const postResponse = await fetch('http://localhost:3000/commands',
+                {method: 'POST',
+                 headers: {'Content-Type': 'application/json'},
+                 body: JSON.stringify({
                     action: "shutdown",
                     experimentId: experiment.id
                 })
-            })
+            });
             const postServerData = await postResponse.json();
 
 
@@ -32,7 +30,7 @@ async function shutdownAllLowExperiments(){
 
 /* TASK 1 */
 async function esperimentiAttivi(){
-    let response = await fetch("http://localhost:3000/experiments");
+    let response = await fetch('http://localhost:3000/experiments');
     let json = await response.json();
 
     let experiments = json.experiments;
@@ -64,7 +62,7 @@ async function esperimentiAttivi(){
 
 /* TASK 3 */
 async function comandiPendenti(){
-    let response = await fetch("http://localhost:3000/commands");
+    let response = await fetch('http://localhost:3000/commands');
     let json = await response.json();
 
     let commands = json.queue;
@@ -73,7 +71,7 @@ async function comandiPendenti(){
     let risultati = [];
     for(let command of commands){
         if(command.status === "pending"){
-            let responsePUT = await fetch('http://localhost:3000/commands/' + command.id + '/execute', {method: 'PUT'});
+            let responsePUT = await fetch("http://localhost:3000/commands/" + command.id + "/execute", {method: 'PUT'});
             let jsonPUT = await responsePUT.json();
         if(jsonPUT.success){
             comandiEseguiti++;
@@ -98,7 +96,6 @@ async function comandiPendenti(){
         comandiFalliti: comandiFalliti,
         risultati: risultati
     });
-
 }
 
 async function emergencyStop(){
@@ -131,8 +128,51 @@ async function emergencyStop(){
             experimentId: esperimentoConPowerMaggiore.id,
             powerSaved: powerMax
         }
+}
 
+async function totPotenza(){
+    let response = await fetch('http://localhost:3000/experiments');
+    let json = await response.json();
 
+    let experiments = json.experiments;
+    let totPowerUsed = json.powerStatus.used;
+    let budget = json.powerStatus.budget;
+    let sogliaBudget = budget * 0.8;
+    let shutdownExp = null;
+    if(totPowerUsed > sogliaBudget){
+        for(let experiment of experiments){
+            if(experiment.status === "active" && experiment.priority === "medium" ){
+                if(shutdownExp === null){
+                    shutdownExp = experiment;
+                }else if(experiment.power < shutdownExp.power){
+                    shutdownExp = experiment;
+                }
+            }
+        }
+
+        let responsePOST = await fetch('http://localhost:3000/commands',
+            {method: 'POST',
+             headers: {'Content-Type': 'application/json'},
+             body: JSON.stringify({
+                action: "shutdown",
+                experimentId: shutdownExp.id,
+                reason: "emergency Power Reduction"
+             })
+        });
+        let jsonPOST = await responsePOST.json();
+        let commandId = jsonPOST.command.id;
+
+        let responsePUT = await fetch('http://localhost:3000/commands/' + commandId + '/execute', {method: 'PUT'});
+        let jsonPUT = await responsePUT.json();
+        let newPowerUsed = jsonPUT.newPowerUsed;
+
+    }
+
+    return{
+        action: "shutdown",
+        experimentId: shutdownExp.id,
+        newPowerUsed: newPowerUsed
+    }
 
 
 }
@@ -149,9 +189,11 @@ async function printResults(){
     console.log(result3);
     const result4 = await emergencyStop();
     console.log(result4);
+    const result5 = await totPotenza();
+    console.log(result5);
     }
     catch (error){
-        console.log("ERRORE DI RETE" + erorr.message);
+        console.log("ERRORE DI RETE" + error.message);
     }
 }
 
