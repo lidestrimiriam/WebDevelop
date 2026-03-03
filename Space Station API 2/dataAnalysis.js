@@ -140,13 +140,19 @@ async function emergencyStop(){
 
 
 async function printResults(){
+    try{
     const result = await shutdownAllLowExperiments();
     console.log(result);
     const result2 = await esperimentiAttivi();
     console.log(result2);
     const result3 = await comandiPendenti();
     console.log(result3);
-
+    const result4 = await emergencyStop();
+    console.log(result4);
+    }
+    catch (error){
+        console.log("ERRORE DI RETE" + erorr.message);
+    }
 }
 
 printResults();
