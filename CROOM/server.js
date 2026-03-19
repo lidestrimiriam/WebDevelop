@@ -98,7 +98,7 @@ app.post("/clienti", (req, res) => {
     res.status(201).json(newClient);
 });
 
-app.get("/clienti/:id", (req, res)){
+app.get("/clienti/:id", (req, res) =>{
     let id = parseInt(req.params.id);
     let clienteTrovato = null;
 
@@ -109,25 +109,22 @@ app.get("/clienti/:id", (req, res)){
     }
 
     if(clienteTrovato){
-        res.json(clienteTrovato);
+        return res.json(clienteTrovato);
     }else{
-        res.status(404).json({error: "ID non trovato"})
+        return res.status(404).json({error: "ID non trovato"});
     }
-}
-
-
-
-
-
+});
 
 //E' una rotta - Root Head
 app.get("/clienti", (req, res) => {
-
     res.json(clienti);
 });
 
 
+app.put("/clienti/:id", (req, res) =>{
+    let id = parseInt(req.params.id);
 
+});
 
 
 
