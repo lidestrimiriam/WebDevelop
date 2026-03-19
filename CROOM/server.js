@@ -4,10 +4,10 @@ const app = express();
 app.use(express.json());
 
 let clienti = [
-    {id: 1, nome: "Han Solo", specie: "umano", crediti: 1500},
-    {id: 2, nome: "Chewbecca", specie: "wookie", crediti: 900},
-    {id: 3, nome: "Greedo", specie: "rodiano", crediti: 300},
-    {id: 4, nome: "Hammerhead", specie: "ithoriano", crediti: 200}
+    {id: 1, nome: "Han Solo", specie: "umano", credito: 1500},
+    {id: 2, nome: "Chewbecca", specie: "wookie", credito: 900},
+    {id: 3, nome: "Greedo", specie: "rodiano", credito: 300},
+    {id: 4, nome: "Hammerhead", specie: "ithoriano", credito: 200}
 ]
 
 let bevande = [
@@ -23,7 +23,7 @@ let nextClient = clienti.length + 1;
 app.use((req, res, next) => {
     console.log("[Cantina Log]" + req.method + "" + req.url);
     next();
-})
+});
 
 //Se non hai la tessere non entri - Middleware
 app.use("/clienti", (req, res, next) => {
@@ -35,7 +35,7 @@ app.use("/clienti", (req, res, next) => {
     }
 
     next();
-})
+});
 
 //Legge un Header x-gettori
 app.use("/clienti", (req, res, next) =>{
@@ -48,7 +48,7 @@ app.use("/clienti", (req, res, next) =>{
         req.gettoni = gettoni;
     }
     next();
-})
+});
 
 app.use("/clienti", (req, res, next) => {
     if(req.method !== "POST" && req.method !== "PUT"){
@@ -57,18 +57,74 @@ app.use("/clienti", (req, res, next) => {
 
     const nome = req.body.nome;
     const specie = req.body.specie;
-    const crediti = req.body.crediti;
+    const credito = parseInt(req.body.credito);
 
     if(!nome){
-        res.status().json();
+        return res.status(400).json({error: "Il nome non è inserita"});
     }
-})
+
+    if(!specie){
+        return res.status(400).json({error: "La specie non è inserita"});
+    }
+
+    if(isNaN(credito)){
+        return res.status(400).json({error: "Il credito non è inserito"});
+    }
+
+    next();
+});
+
+app.post("/clienti", (req, res) => {
+    const nome = req.body.nome;
+    const specie = req.body.specie;
+    const credito = req.body.credito;
+    let trovato = false;
+
+    for(let cliente of clienti){
+        if(cliente.nome === nome){
+            trovato = true;
+            
+        }
+    }
+
+    if(trovato){
+        return res.status(409).json({error: "Nome del cliente già esistente"});
+    }
+
+    let newClient = {id: nextClientID, nome: nome, specie: specie, credito: credito};
+    nextClientID++;
+    clienti.push(newClient);
+
+    res.status(201).json(newClient);
+});
+
+app.get("/clienti/:id", (req, res)){
+    let id = parseInt(req.params.id);
+    let clienteTrovato = null;
+
+    for(let cliente of clienti){
+        if(cliente.id === id){
+            clienteTrovato = cliente;
+        }
+    }
+
+    if(clienteTrovato){
+        res.json(clienteTrovato);
+    }else{
+        res.status(404).json({error: "ID non trovato"})
+    }
+}
+
+
+
+
+
 
 //E' una rotta - Root Head
 app.get("/clienti", (req, res) => {
 
     res.json(clienti);
-})
+});
 
 
 
