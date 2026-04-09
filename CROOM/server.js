@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 
+
 app.use(express.json());
 
 let clienti = [
@@ -9,15 +10,21 @@ let clienti = [
     {id: 3, nome: "Greedo", specie: "rodiano", credito: 300},
     {id: 4, nome: "Hammerhead", specie: "ithoriano", credito: 200}
 ]
+ let nextClient = clienti.length + 1;
 
 let bevande = [
-    {id: 1, nome: "Corelian Ale", prezzo: 50 , gradazione: 8},
-    {id: 2, nome: "Juice", prezzo: 80 , gradazione: 15},
-    {id: 3, nome: "Meranzane Gold", prezzo: 120 , gradazione: 8},
-    {id: 4, nome: "Spotchka", prezzo: 200 , gradazione: 20}
+    {id: 1, nome: "Corelian Ale", prezzo: 50, gradazione: 8},
+    {id: 2, nome: "Juice", prezzo: 80, gradazione: 15},
+    {id: 3, nome: "Meranzane Gold", prezzo: 120, gradazione: 8},
+    {id: 4, nome: "Spotchka", prezzo: 200, gradazione: 20}
 ]
 
-let nextClient = clienti.length + 1;
+let ordini = [
+    {id: 1, cliente: "", quantita: 50, costo_base: 8},
+    {id: 2, cliente: "", quantita: 80, gradazione: 15},
+    {id: 3, cliente: " ", quantita: 120, gradazione: 8},
+    {id: 4, cliente: "", quantita: 200, gradazione: 20}
+]
 
 //Logger - Middleware
 app.use((req, res, next) => {
@@ -124,10 +131,50 @@ app.get("/clienti", (req, res) => {
 app.put("/clienti/:id", (req, res) =>{
     let id = parseInt(req.params.id);
 
+    let clienteTrovato = null;
+    for(let cliente of clienti){
+        if(cliente.id === id){
+            clienteTrovato = cliente;
+        }
+    }
+
+    if(!clienteTrovato){
+        return res.status(404).json({error: "ID NOT FOUND"});
+    }
+
+    clienteTrovato.nome = req.body.nome;
+    clienteTrovato.specie = req.body.specie;
+    clienteTrovato.credito = req.body.credito;
+
+    return res.json(clienteTrovato);
 });
+ 
 
+app.delete("/clienti/:id", (req, res) =>{
+    let id = parseInt(req.params.id);
 
+    let array = [];
 
+    let clienteTrovato = null;
+    for(let cliente of clienti){
+        if(cliente.id !== id){
+            array.push(cliente);
+        }else{
+            clienteTrovato = cliente;
+        }
+    }
+
+    if(!clienteTrovato){
+        return res.status(404).json({error: "ID NOT FOUND"});
+    }
+
+    clienti = array;
+    return res.json(array);
+})
+
+app.get("/bevande", (req, res) => {
+    res.json(bevande);
+});
 
 
 
